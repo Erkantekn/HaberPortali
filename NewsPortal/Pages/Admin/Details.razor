@@ -1,0 +1,42 @@
+﻿@page "/admin/news/details/{id:long}"
+    <style>
+        td img {
+            max-width: 100%;
+        }
+    </style>
+    <div class="section-header">
+        <h1>Haber Detay</h1>
+    </div>
+    <div class="row" style="display:block;">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-sm table-bordered table-striped">
+                    <tbody>
+                        <tr><th>ID</th><td>@news.NewsID</td></tr>
+                        <tr><th>Kategori</th><td>@news.Category.Name</td></tr>
+                        <tr><th>Başlık</th><td>@news.Topic</td></tr>
+                        <tr><th>İçerik</th><td>@news.Content</td></tr>
+                        <tr><th>Resim Yolu</th><td><img src="/assets/@news.ImagePath" /></td></tr>
+                    </tbody>
+                </table>
+
+                <NavLink class="btn btn-warning" href="@EditUrl">Düzenle</NavLink>
+                <NavLink class="btn btn-secondary" href="/admin/news">Geri Dön</NavLink>
+            </div>
+        </div>
+    </div>
+
+    @code { [Inject]
+        public PortalDbContext Repository { get; set; }
+
+        [Parameter]
+        public long Id { get; set; }
+
+        public News news { get; set; }
+
+        protected override void OnParametersSet()
+        {
+            news = Repository.News.AsQueryable().Include(x => x.Category).FirstOrDefault(p => p.NewsID == Id);
+        }
+
+        public string EditUrl => $"/admin/news/edit/{news.NewsID}"; }

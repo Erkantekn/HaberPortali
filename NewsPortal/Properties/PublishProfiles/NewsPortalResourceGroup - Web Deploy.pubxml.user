@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAYrqpk1HYNUuFmuRAadWpBgAAAAACAAAAAAAQZgAAAAEAACAAAAB6jRziT4TMkMr/XZkhOTK5my0qcCG1Wso22n76dHsA+wAAAAAOgAAAAAIAACAAAAAVudVE4GVostxdXGuOT3wWgl+WpO2fPdGQTt1NqMXwt4AAAAA+Cpmns/vnPKaf2o0safyAm/40GE8zRAZw1zzO44I2+Kg0Rrfj6HvmyX1wMjugyrTjEzZ0d2O1dTiA9jt5WY9bbqJ0kikdaRpc1MZNNL84HNO9y5whrHCSmZsqqYqqkA7Ue8JI1zRGAwswT9mSCWtKz6qvVxF6LrgtAb94J8xV8UAAAAA1VhMoAHcztOZOUR84E531nt19sgkCku4g+kzQLCY6KSmuPg4JP8EFyg+FoY2mCdBbJpoddPPd7xNtkpNIYIIe</EncryptedPassword>
+  </PropertyGroup>
+  <ItemGroup>
+    <AzureDBConnectionStrings Include="Data Source=tcp:newsportaldbserver.database.windows.net,1433;Initial Catalog=Identity;User Id=user@newsportaldbserver;Password=Erkan123" />
+    <AzureDBConnectionStrings Include="Data Source=tcp:newsportaldbserver.database.windows.net,1433;Initial Catalog=NewsPortal;User Id=user@newsportaldbserver;Password=Erkan123" />
+    <AzureDBConnectionStrings Include="Data Source=tcp:newsportaldbserver.database.windows.net,1433;Initial Catalog=NewsPortal_db;User Id=user@newsportaldbserver;Password=Erkan123" />
+  </ItemGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="IdentityConnection">
+      <Value>Data Source=tcp:newsportaldbserver.database.windows.net,1433%3bInitial Catalog=NewsPortal%3bUser Id=user%40newsportaldbserver%3bPassword=Erkan123</Value>
+    </DestinationConnectionStrings>
+    <DestinationConnectionStrings Include="NewsPortalConnection">
+      <Value>Data Source=tcp:newsportaldbserver.database.windows.net,1433%3bInitial Catalog=NewsPortal%3bUser Id=user%40newsportaldbserver%3bPassword=Erkan123</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+</Project>

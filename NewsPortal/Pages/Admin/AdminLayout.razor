@@ -1,0 +1,99 @@
+﻿@inherits LayoutComponentBase
+
+
+
+<div id="app">
+    <div class="main-wrapper main-wrapper-1">
+        <div class="navbar-bg"></div>
+
+
+        <nav class="navbar navbar-expand-lg main-navbar">
+            <form class="form-inline mr-auto">
+                <ul class="navbar-nav mr-3">
+                    <li><a href="javascript:;" data-toggle="search" class="nav-link nav-link-lg d-sm-none"><i class="fas fa-search"></i></a></li>
+                </ul>
+
+            </form>
+            <ul class="navbar-nav navbar-right">
+
+
+                <li class="dropdown">
+                    <a href="javascript:;" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
+                        <img alt="image" src="/assets/admin/img/avatar/avatar-1.png" class="rounded-circle mr-1">
+                        <div class="d-sm-none d-lg-inline-block">Admin</div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a href="/Account/Logout" class="dropdown-item has-icon text-danger">
+                            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="main-sidebar sidebar-style-2" tabindex="1" style="overflow: hidden; outline: none;">
+            <aside id="sidebar-wrapper">
+                <div class="sidebar-brand">
+                    <a href="/Admin">Erkan Tekin</a>
+                </div>
+                <div class="sidebar-brand sidebar-brand-sm">
+                    <a href="/Admin">ET</a>
+                </div>
+                <ul class="sidebar-menu">
+                    <li class="menu-header">İstatistikler</li>
+                    <li class="@GetActive("/admin")">
+                        <NavLink class="nav-link" href="/admin" data-toggle="tooltip" data-original-title="İstatistikler"><i class="fas fa-fire"></i> <span>İstatistikler</span></NavLink>
+                    </li>
+                    <li class="menu-header">Veri</li>
+
+                    <li class="@GetActive("/admin/news")">
+                        <NavLink class="nav-link" href="/admin/news" data-toggle="tooltip" data-original-title="Haberler"><i class="far fa-newspaper"></i> <span>Haberler</span></NavLink>
+                    </li>
+                    <li class="@GetActive("/admin/categories")">
+                        <NavLink class="nav-link" href="/admin/categories" data-toggle="tooltip" data-original-title="Kategoriler"><i class="far fa-circle"></i> <span>Kategoriler</span></NavLink>
+                    </li>
+
+                  
+                </ul>
+
+
+            </aside>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" style="min-height: 842px;">
+            <section class="section">
+                @Body
+            </section>
+        </div>
+              
+
+                <footer class="main-footer">
+                    <div class="footer-left">
+                        Copyright © 2021 <div class="bullet"></div> 182119007 Erkan Tekin
+                    </div>
+                    <div class="footer-right">
+
+                    </div>
+                </footer>
+
+        </div>
+    </div>
+
+
+
+
+@code{
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+    protected override void OnInitialized() => NavigationManager.LocationChanged += (s, e) => StateHasChanged();
+
+
+
+    string GetActive(string href) {
+        if (href.ToLower() == "/admin" && NavigationManager.Uri.ToLower() == NavigationManager.BaseUri.ToLower() + "admin")
+            return "active";
+        else if (href.ToLower() != "/admin" && NavigationManager.Uri.Contains(href))
+            return "active";
+        return "";
+    }
+}

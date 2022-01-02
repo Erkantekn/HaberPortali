@@ -1,0 +1,57 @@
+﻿@model LayoutModel<List<News>>
+@{
+    ViewData["Title"] = "Kategori Detay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (Model.PageModel.Count > 0)
+{
+
+    <div class="popular-news">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="d-flex position-relative float-left">
+                    <h3 class="section-title">@Model.PageModel.FirstOrDefault().Category.Name</h3>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row">
+                        @foreach (var item in Model.PageModel)
+                        {
+                    <div class="col-sm-4  mb-5 mb-sm-2">
+
+                        <div class="position-relative image-hover">
+                            <img src="/assets/@item.ImagePath"
+                                 class="img-fluid"
+                                 alt="world-news" />
+                            <span class="thumb-title" style="background-color:@item.Category.Color !important"><a href="/Home/Category?id=@item.Category.CategoryID">@item.Category.Name</a></span>
+                        </div>
+                        <h5 class="font-weight-bold mt-3">
+                            @item.Topic
+                        </h5>
+                        <p class="fs-15 font-weight-normal">
+                            @item.Content
+                        </p>
+                        <a href="/Home/GetDetail?id=@item.NewsID" class="font-weight-bold text-dark pt-2">Devamını Oku</a>
+                    </div>
+                        }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+}
+else
+{<div class="container" style="margin-top:40px;">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="d-flex position-relative float-left">
+                    <h3 class="section-title">Burada hiç içerik yok!</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+        }

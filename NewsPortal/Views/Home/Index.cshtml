@@ -1,0 +1,56 @@
+﻿@model LayoutModel<IndexViewModel>
+@{
+    ViewData["Title"] = "Anasayfa";
+}
+<style>
+    .owl-dots {
+        display: none !important;
+    }
+
+    .owl-nav {
+        display: block !important;
+    }
+
+        .owl-nav button {
+            font-size: 30px !important;
+        }
+
+    .fs-10 {
+        font-size: 17px;
+    }
+</style>
+
+@await Html.PartialAsync("_SliderPartial",Model.PageModel.SliderNews)
+
+<div class="world-news">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="d-flex position-relative  float-left">
+                <h3 class="section-title">Rastgele Haberler</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var item in Model.PageModel.RandomNews)
+        {
+
+            <div class="col-lg-3 col-sm-6 grid-margin mb-5 mb-sm-2">
+                <div class="position-relative image-hover">
+                    <img src="/assets/@item.ImagePath"
+                         class="img-fluid"
+                         alt="world-news" />
+                    @*<span class="thumb-title" style="background-color:@item.Category.Color !important"><a href="/Home/Category?id=@item.Category.CategoryID">@item.Category.Name</a></span>*@
+                    <category-span span-class="thumb-title" background-color="@item.Category.Color" action="/Home/Category?id=@item.Category.CategoryID" text="@item.Category.Name"></category-span>
+                    <span class="thumb-title" style="background-color:@item.Category.Color !important"><a href="/Home/Category?id=@item.Category.CategoryID">@item.Category.Name</a></span>
+                </div>
+                <h5 class="font-weight-bold mt-3">
+                    @item.Topic
+                </h5>
+                <p class="fs-15 font-weight-normal">
+                    @item.Content
+                </p>
+                <a href="/Home/GetDetail?id=@item.NewsID" class="font-weight-bold text-dark pt-2">Devamını Oku</a>
+            </div>
+        }
+    </div>
+</div>

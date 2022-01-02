@@ -1,0 +1,175 @@
+﻿@page "/admin/news/edit/{id:long}"
+@page "/admin/news/create"
+@using Tewr.Blazor.FileReader
+@using System.IO;
+@inject IFileReaderService fileReaderService;
+
+@inherits OwningComponentBase<PortalDbContext>
+<style>
+    div.validation-message {
+        color: rgb(220, 53, 69);
+        font-weight: 500
+    }
+</style>
+<div class="section-header">
+    <h1>Haber @TitleText</h1>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <EditForm Model="news" OnValidSubmit="SaveNews">
+                    <DataAnnotationsValidator />
+                    @if (news.NewsID != 0)
+                    {
+                        <div class="form-group">
+                            <label>Id</label>
+                            <InputNumber class="form-control" @bind-Value="news.NewsID" disabled />
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label>Başlık</label>
+                        <InputText class="form-control" @bind-Value="news.Topic" />
+                        <ValidationMessage For="@(() => news.Topic)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori</label>
+                        <InputSelect class="form-control" @bind-Value="SelectedCategoryId">
+                            @foreach (var item in Categories)
+                            {
+                                if (news.NewsID > 0 && item.CategoryID == news.Category.CategoryID)
+                                {
+                                    <option value="@item.CategoryID" selected>@item.Name</option> }
+                                else
+                                {
+                                    <option value="@item.CategoryID">@item.Name</option>}
+                            }
+
+                        </InputSelect>
+                        <ValidationMessage For="@(() => news.Category.Name)" />
+                    </div>
+                    <div class="form-group">
+                        <label>İçerik</label>
+                        <InputTextArea class="form-control" @bind-Value="news.Content" />
+                        <ValidationMessage For="@(() => news.Content)" />
+                    </div>
+
+                    <div class="form-group">
+                        
+                        <div class="col-md-12">
+                            <label>Resim</label>
+                            <InputText class="form-control" @bind-Value="news.ImagePath" disabled />
+                            <ValidationMessage For="@(() => news.ImagePath)" />
+                        </div>
+
+
+
+                                @if (!string.IsNullOrEmpty(news.ImagePath))
+                                {
+                                    <div class="col-md-12" style="margin:20px 0px;">
+                                        <img src="/assets/@news.ImagePath" style="max-width:150px;" />
+                                    </div>
+                                }
+                                <div class="col-md-12">
+
+                                    <input type="file" @ref=inputTypeFileElement class="btn btn-secondary" />
+                                    <button type="button" @onclick=ReadFile class="btn btn-primary">Seçilen Resimi Yükle</button>
+                                </div>
+                                
+
+                            </div>
+
+
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                    <NavLink class="btn btn-secondary" href="/admin/news">İptal</NavLink>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+
+    public PortalDbContext Repository => Service;
+
+    [Inject]
+    public NavigationManager NavManager { get; set; }
+
+    [Parameter]
+    public long Id { get; set; } = 0;
+
+    [Parameter]
+    public string SelectedCategoryId { get; set; }
+
+
+
+    public News news { get; set; } = new News();
+    public List<Category> Categories { get; set; } = new List<Category>();
+
+    private ElementReference inputTypeFileElement;
+    private string oldImagePath;
+    public async Task ReadFile()
+    {
+        foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+        {
+            string rootpath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot");
+            var fileInfo = await file.ReadFileInfoAsync();
+            string fileName = fileInfo.Name;
+
+            fileName = Path.GetFileNameWithoutExtension(fileName) + Guid.NewGuid() + Path.GetExtension(fileName);
+            // Read into buffer and act (uses less memory)
+            await using (var fileStream = new FileStream(rootpath + "\\assets\\images\\news\\" + fileName, FileMode.Create, FileAccess.Write))
+            await using (Stream stream = await file.OpenReadAsync())
+            {
+                //// Do (async) stuff with stream...
+                await stream.CopyToAsync(fileStream);
+            }
+            oldImagePath = news.ImagePath;
+            news.ImagePath = "images\\news\\" + fileName;
+
+        }
+    }
+
+
+    protected override void OnParametersSet()
+    {
+        Categories = Repository.Categories.ToList();
+        SelectedCategoryId = Categories.FirstOrDefault().CategoryID.ToString();
+        if (Id != 0)
+        {
+            news = Repository.News.AsQueryable().Include(x => x.Category).FirstOrDefault(p => p.NewsID == Id);
+            SelectedCategoryId = news.Category.CategoryID.ToString();
+        }
+        else
+        {
+            news.Category = Categories.FirstOrDefault();
+        }
+
+
+
+    }
+
+    public void SaveNews()
+    {
+        news.Category = Repository.Categories.FirstOrDefault(x => x.CategoryID == int.Parse(SelectedCategoryId));
+        if (Id == 0)
+        {
+
+            Repository.News.Add(news);
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(oldImagePath))
+            {
+                if (!String.IsNullOrEmpty(news.ImagePath))
+                {
+                    File.Delete(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot") + "\\assets\\" + oldImagePath);
+                }
+            }
+            Repository.News.Update(news);
+        }
+        Repository.SaveChanges();
+        NavManager.NavigateTo("/admin/news");
+    }
+
+    public string TitleText => Id == 0 ? "Ekle" : "Düzenle";
+}

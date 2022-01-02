@@ -1,0 +1,42 @@
+﻿@model List<News>
+<style>
+    .owl-carousel h1 {
+        font-size: 32px;
+        background-color: #00000063;
+        border-radius: 10px;
+        padding-left: 10px;
+    }
+</style>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="owl-carousel owl-theme" id="main-banner-carousel" style="height:550px;">
+            @foreach (var item in Model)
+            {
+
+                <div class="item">
+                    <div class="carousel-content-wrapper mb-2">
+                        <div class="carousel-content">
+                            <h1 class="font-weight-bold">
+                                <a href="/Home/GetDetail?id=@item.NewsID">
+                                    @item.Topic
+                                </a>
+                            </h1>
+                            <h5 class="font-weight-normal  m-0" style="max-height:50px;overflow:hidden">
+                                @item.Content
+                            </h5>
+                            <p class="text-color m-0 pt-2 d-flex align-items-center">
+                                <a href="/Home/Category?id=@item.Category.CategoryID">
+                                    <span class="fs-10 mr-1" style="background-color:@item.Category.Color; padding:8px;">@item.Category.Name</span>
+                                </a>
+                            </p>
+                        </div>
+                        <div class="carousel-image">
+                            <img src="/assets/@item.ImagePath" alt="" style="object-fit: cover;height:550px;" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

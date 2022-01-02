@@ -1,0 +1,92 @@
+﻿@page "/admin"
+@inherits OwningComponentBase<PortalDbContext>
+<div class="section-header">
+    <h1>İstatistikler</h1>
+</div>
+<div class="row">
+
+    <div class="col-md-6 col-sm-6 col-12">
+        <div class="card card-statistic-1">
+            <div class="card-icon bg-danger">
+                <i class="far fa-newspaper"></i>
+            </div>
+            <div class="card-wrap">
+                <div class="card-header">
+                    <h4>Haberler</h4>
+                </div>
+                <div class="card-body">
+                    @NewsCount.ToString()
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-sm-6 col-12">
+        <div class="card card-statistic-1">
+            <div class="card-icon bg-success">
+                <i class="fas fa-circle"></i>
+            </div>
+            <div class="card-wrap">
+                <div class="card-header">
+                    <h4>Kategoriler</h4>
+                </div>
+                <div class="card-body">
+                    @CategoryCount.ToString()
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Kategori Bazlı Haberler</h4>
+            </div>
+            <div class="card-body">
+                @for (int i = 0; i < CategoryCount; i++)
+                {
+                    //9 2
+                    //100 x
+                <div class="mb-4">
+                    <div class="text-small float-right font-weight-bold text-muted">@CategoryPair[i, 1]</div>
+                    <div class="font-weight-bold mb-1">@CategoryPair[i, 0]</div>
+                    <div class="progress" data-height="3" style="height: 3px;">
+                        <div class="progress-bar" role="progressbar" data-width="80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: @(100*int.Parse(CategoryPair[i, 1])/CategoryCount)%;"></div>
+                    </div>
+                </div>
+                }
+
+               
+            </div>
+        </div> 
+
+
+    </div>
+
+</div>
+
+@code {
+    public PortalDbContext Repository => Service;
+    [Parameter]
+    public int NewsCount { get; set; }
+    [Parameter]
+    public int CategoryCount { get; set; }
+    [Parameter]
+    public string[,] CategoryPair { get; set; }
+    protected override void OnParametersSet()
+    {
+        NewsCount = Repository.News.Count();
+        var categories = Repository.Categories.ToList();
+        CategoryCount = categories.Count();
+        CategoryPair = new string[CategoryCount, 2];
+        for (int i = 0; i < CategoryCount; i++)
+        {
+            CategoryPair[i, 0] = categories[i].Name;
+            CategoryPair[i, 1] = Repository.News.Where(x=>x.Category.CategoryID==categories[i].CategoryID).Count().ToString();
+        }
+    }
+
+}

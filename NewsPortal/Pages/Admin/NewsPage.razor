@@ -1,0 +1,96 @@
+﻿@page "/admin/news"
+@inherits OwningComponentBase<PortalDbContext>
+@using System.IO;
+<style>
+    td img {
+        max-width: 100%;
+    }
+</style>
+<div class="section-header">
+    <h1>Haberler</h1>
+</div>
+
+<div class="row" style="display:block;">
+    <div class="card">
+        <div class="card-body">
+
+
+            <table class="table table-sm table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kategori</th>
+                        <th>Başlık</th>
+                        <th>İçerik</th>
+                        <th>Resim Yolu</th>
+                        <th>-</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (NewsData?.Count() > 0)
+                    {
+        @foreach (News p in NewsData)
+        {
+<tr>
+    <td>@p.NewsID</td>
+    <td>@p.Category.Name</td>
+    <td>@p.Topic</td>
+    <td>@p.Content</td>
+    <td><img src="/assets/@p.ImagePath" /></td>
+    <td>
+        <NavLink class="btn btn-info btn-sm"
+                 href="@GetDetailsUrl(p.NewsID)">
+            Detay
+        </NavLink>
+        <NavLink class="btn btn-warning btn-sm"
+                 href="@GetEditUrl(p.NewsID)">
+            Düzenle
+        </NavLink>
+        <button class="btn btn-danger btn-sm"
+                @onclick="@(e => DeleteNews(p))">
+            Sil
+        </button>
+    </td>
+</tr>
+} }
+    else
+    {
+<tr>
+    <td colspan="5" class="text-center">Haber Bulunamadı</td>
+</tr>
+}
+                </tbody>
+            </table>
+
+            <NavLink class="btn btn-primary" href="/admin/news/create">Oluştur</NavLink>
+        </div>
+    </div>
+</div>
+
+@code { public PortalDbContext Repository => Service;
+
+    public IEnumerable<News> NewsData { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    public async Task UpdateData()
+    {
+        NewsData = await Repository.News.AsQueryable().Include(x => x.Category).ToListAsync();
+    }
+
+    public async Task DeleteNews(News p)
+    {
+        if (!String.IsNullOrEmpty(p.ImagePath))
+        {
+            File.Delete(System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot") + "\\assets\\" + p.ImagePath);
+        }
+        Repository.News.Remove(p);
+        Repository.SaveChanges();
+        await UpdateData();
+    }
+
+    public string GetDetailsUrl(long id) => $"/admin/news/details/{id}";
+    public string GetEditUrl(long id) => $"/admin/news/edit/{id}"; }

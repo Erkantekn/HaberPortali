@@ -1,0 +1,47 @@
+﻿@model LayoutModel<News>
+@{
+    ViewData["Title"] = "Detay";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model.PageModel != null)
+{
+
+
+<div class="editors-news">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="d-flex position-relative float-left">
+                <h3 class="section-title"></h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6  mb-5 mb-sm-2">
+            <div class="position-relative image-hover">
+                <img src="/assets/@Model.PageModel.ImagePath"
+                     class="img-fluid"
+                     alt="world-news" />
+                <span class="thumb-title" style="background-color:@Model.PageModel.Category.Color !important"><a href="/Home/Category?id=@Model.PageModel.Category.CategoryID">@Model.PageModel.Category.Name</a></span>
+            </div>
+           
+            
+        </div>
+        <div class="col-lg-6  mb-5 mb-sm-2">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <h1 class="font-weight-600 mt-3">
+                        @Model.PageModel.Topic
+                    </h1>
+                </div>
+                <div class="col-md-12">
+                    <p class="fs-14 font-weight-normal">
+                        @Model.PageModel.Content
+                    </p>
+                </div>
+                </div>
+            </div>
+    </div>
+</div>
+}

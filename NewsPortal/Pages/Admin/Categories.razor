@@ -1,0 +1,85 @@
+﻿@page "/admin/categories"
+@inherits OwningComponentBase<PortalDbContext>
+<div class="section-header">
+    <h1>Kategoriler</h1>
+</div>
+<div class="row" style="display:block;">
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-sm table-striped table-bordered">
+                <thead>
+                    <tr><th colspan="5" class="text-center">Kategoriler</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kategori Adı</th>
+                        <th>Renk</th>
+                        <th>Düzenle</th>
+                        <th>Sil</th>
+                    </tr>
+                    @if (CategoriesList?.Count() > 0)
+                    {
+                        @foreach (Category o in CategoriesList)
+                        {
+                            <tr>
+                                <td>@o.CategoryID</td>
+                                <td>@o.Name</td>
+                                <td style="color:@o.Color">@o.Color</td>
+                                <td>
+                                    <a class="btn btn-sm btn-warning" href="@EditCategory(o.CategoryID)">
+                                        Düzenle
+                                    </a>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger"
+                                            @onclick="@(e => DeleteCategory(o))">
+                                        Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        } }
+                    else
+                    {
+                        <tr><td colspan="5" class="text-center">Kategori Bulunamadı</td></tr>
+                    }
+                </tbody>
+            </table>
+            <NavLink class="btn btn-primary" href="/admin/categories/create">Oluştur</NavLink>
+        </div>
+        </div>
+        </div>
+
+        @code {
+
+            public PortalDbContext Repository => Service;
+
+            public IEnumerable<Category> CategoriesList { get; set; }
+
+            protected async override Task OnInitializedAsync()
+            {
+                await RefreshTable();
+            }
+            private async Task RefreshTable()
+            {
+                CategoriesList = await Repository.Categories.ToListAsync();
+            }
+
+
+
+            public string EditCategory(int id) => $"/admin/categories/edit/{id}";
+            public async Task DeleteCategory(Category p)
+            {
+                //silinecek kategoriye bağlı olan haberlerin kategorileri değiştiriliyor
+                var listNews = Repository.News.Where(x => x.Category.CategoryID == p.CategoryID).ToList();
+                foreach (var item in listNews)
+                {
+                    item.Category = Repository.Categories.FirstOrDefault(x => x.CategoryID != p.CategoryID);
+                    Repository.News.Update(item);
+                }
+                Repository.SaveChanges();
+                Repository.Categories.Remove(p);
+                Repository.SaveChanges();
+                await RefreshTable();
+            }
+        }
